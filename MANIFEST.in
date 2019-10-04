@@ -1,0 +1,4 @@
+include *.md
+include LICENSE
+include sequdas_qc/Config/config.ini
+recursive-include sequdas_qc/Lib/cluster
