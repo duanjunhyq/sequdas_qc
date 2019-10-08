@@ -1,0 +1,60 @@
+{% set name = "sequdas_qc" %}
+{% set version = "1.0.1" %}
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+# source:
+#   url: "https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz"
+#   sha256: "6df4205c38b750eb4c296fda978ff5913d91a2fe655583b2bb109ce63d0be7d0"
+
+source:
+  url: "https://test-files.pythonhosted.org/packages/1b/2f/7698fc476c3015f020b72a6240bc4653cc22942c9a3b0378e16488ab2ecd/sequdas_qc-1.0.0.tar.gz"
+  sha256: "b980af9ff449f7c9989b5822b883128808456fca46b27b9c08437833610bec2f"
+
+build:
+  number: 0
+  entry_points:
+    - sequdas_qc=sequdas_qc.sequdas_qc:main
+  script: "{{ PYTHON }} -m pip install . --no-deps --ignore-installed -vv "
+
+channels:
+  - defaults
+  - bioconda
+  - conda-forge
+
+requirements:
+  host:
+    - python
+  run:
+    - python
+    - configparser
+    - mysql-connector-python
+    - pytz
+    - ntplib
+    - validate_email
+    - paramiko
+    - kraken2
+    - krona
+    - illumina-interop
+    - samtools
+    - fastqc
+    - hashdeep
+
+test:
+  imports:
+    - sequdas_qc
+
+about:
+  home: "https://github.com/duanjunhyq/sequdas"
+  license: "MIT"
+  license_family: "MIT"
+  license_file: ""
+  summary: "SeqUDAS: Sequence Upload and Data Archiving System"
+  doc_url: ""
+  dev_url: ""
+
+extra:
+  recipe-maintainers:
+    - duanjunhyq
