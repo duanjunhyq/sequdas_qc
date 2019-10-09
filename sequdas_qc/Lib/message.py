@@ -17,9 +17,9 @@ def send_email_core(user, pwd, recipient, subject, body):
         server_ssl.login(gmail_user, gmail_pwd)  
         server_ssl.sendmail(FROM, TO, message)
         server_ssl.close()
-        print 'successfully sent the mail'
+        print('successfully sent the mail')
     except:
-        print "failed to send mail"
+        print("failed to send mail")
 #################################################     
 
 

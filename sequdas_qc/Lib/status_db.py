@@ -1,4 +1,3 @@
-import mysql.connector
 import pymysql
 import time
 from sequdas_qc.Lib.core import *

@@ -15,7 +15,7 @@ setuptools.setup(
     licence='MIT',
     keywords="NGS sequence archive analysis",    
     packages=setuptools.find_packages(include=['sequdas_qc','sequdas_qc.Lib']),
-    install_requires=['configparser','mysql-connector-python','pytz','ntplib','validate_email'],
+    install_requires=['configparser','pymysql','pytz','ntplib','validate_email'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

@@ -101,7 +101,7 @@ def sequdas_config():
 def read_config():
     import os.path
     import sequdas_qc
-    configFilePath=os.path.dirname(sequdas_client.__file__)+"/"+"Config/config.ini";
+    configFilePath=os.path.dirname(sequdas_qc.__file__)+"/"+"Config/config.ini";
     config = configparser.RawConfigParser()
     try:
         config.read(configFilePath)
