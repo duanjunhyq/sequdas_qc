@@ -25,7 +25,7 @@ setuptools.setup(
     python_requires='>=3.6',
     entry_points={
     	'console_scripts': [
-    		'sequdas-qc=sequdas_qc.sequdas_qc:main'
+    		'sequdas_qc=sequdas_qc.sequdas_qc:main'
     	]
     },
   

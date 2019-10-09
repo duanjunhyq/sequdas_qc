@@ -1,4 +1,5 @@
 import mysql.connector
+import pymysql
 import time
 from sequdas_qc.Lib.core import *
 
@@ -10,7 +11,7 @@ mysql_passwd=s_config['mysql_account']['mysql_passwd']
 mysql_db=s_config['mysql_account']['mysql_db']
 
 def doInsert(bccdc_id_value,source_value,fullpath_value,folder_value,analysis_status,start_time_value,sample_infor) :
-    myConnection = mysql.connector.connect( host=mysql_host, user=mysql_user, passwd=mysql_passwd, db=mysql_db)
+    myConnection = pymysql.connect( host=mysql_host, user=mysql_user, passwd=mysql_passwd, db=mysql_db)
     cur = myConnection.cursor()
     end_time_value=""
     cur.execute("INSERT INTO status_table (bccdc_id,source,fullpath,folder,status,start_time,end_time,sample) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",(bccdc_id_value,source_value,fullpath_value,folder_value,analysis_status,start_time_value,end_time_value,sample_infor))
@@ -18,11 +19,10 @@ def doInsert(bccdc_id_value,source_value,fullpath_value,folder_value,analysis_st
     myConnection.close()
 
 def update_from_server(sequdas_id,analysis_status,step):
-    myConnection = mysql.connector.connect( host=mysql_host, user=mysql_user, passwd=mysql_passwd, db=mysql_db)
+    myConnection = pymysql.connect( host=mysql_host, user=mysql_user, passwd=mysql_passwd, db=mysql_db)
     timestamp = time.strftime("%Y-%m-%d#%H:%M:%S")
     cur = myConnection.cursor()
     cur.execute(("UPDATE status_table SET analysis_status=%s,end_time=%s,status=%s WHERE bccdc_id=%s"),(analysis_status,timestamp,step,sequdas_id))
-#    #cur.execute(("UPDATE status_table SET analysis_status=%s,end_time=%s,status=%s WHERE bccdc_id=%s"),(analysis_status,timestamp,step,sequdas_id))
     myConnection.commit()
     myConnection.close()
 
@@ -43,7 +43,7 @@ def status_update(sequdas_id,step_id,status):
 
 def get_status(sequdas_id):
     s_config=sequdas_config()
-    myConnection = mysql.connector.connect( host=mysql_host, user=mysql_user, passwd=mysql_passwd, db=mysql_db)
+    myConnection = pymysql.connect( host=mysql_host, user=mysql_user, passwd=mysql_passwd, db=mysql_db)
     cur = myConnection.cursor()
     cur.execute(("SELECT analysis_status FROM `status_table` WHERE bccdc_id=%s order by id desc LIMIT 1"),(sequdas_id,))    
     data = cur.fetchone()
