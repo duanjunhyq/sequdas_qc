@@ -20,4 +20,4 @@ for line in f:
             kaiju_data.append(line_dict)
 
 top_results = sorted(kaiju_data, key=lambda k: k['percent_reads_in_clade'], reverse=True)[:max_columns]
-print json.dumps(top_results)
+print(json.dumps(top_results))

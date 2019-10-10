@@ -23,6 +23,7 @@ import sys
 import re
 import shutil
 import logging
+import sequdas_qc
 from sequdas_qc.Lib.core import *
 from sequdas_qc.Lib.status_log import *
 from sequdas_qc.Lib.sample_sheet import *
@@ -38,10 +39,10 @@ import json
 # Step 5: IRIDA uploader (status=8)
                         
 
-def main(argv = None):
-    if argv is None:
-        argv = sys.argv
-    (input_dir, out_dir,step_id,run_style,keep_kraken,keep_kaiju,run_uploader,sequdas_id,send_email_switch, cluster)=run_parameter(argv)
+def main(args=None):
+    if args is None:
+        args = sys.argv[1:]
+    (input_dir, out_dir,step_id,run_style,keep_kraken,keep_kaiju,run_uploader,sequdas_id,send_email_switch, cluster)=run_parameter(args)
     run_style=str2bool(run_style)
     keep_kraken=str2bool(keep_kraken)
     run_uploader=str2bool(run_uploader)
@@ -52,8 +53,8 @@ def main(argv = None):
     check_folder(out_dir)
     check_folder(run_analysis_folder)
     s_config=sequdas_config()
-    logfile_dir=s_config['basic']['logfile_dir']
-    logfile_dir=os.path.join(os.path.dirname(os.path.abspath(__file__)),s_config['basic']['logfile_dir'])
+    server_dir=os.path.dirname(sequdas_qc.__file__)
+    logfile_dir=os.path.join(server_dir,"Log")
     logfile_dir=check_path_with_slash(logfile_dir)
     check_create_folder(logfile_dir)
     check_create_folder(logfile_dir+"/Qsub")
@@ -68,11 +69,10 @@ def main(argv = None):
     split_pattern = re.compile(r"[;,]")
     email_list_admin=split_pattern.split(admin_emails)
     email_list=email_list_admin
-    server_dir = s_config['basic']['server_dir']
+    #server_dir = s_config['basic']['server_dir']
+    
     db = s_config['kraken']['db']
-    krona = s_config['conda']['krona']
-    krona = krona+"/ktImportTaxonomy"
-    interop = s_config['conda']['interop']
+    krona = "ktImportTaxonomy"
     irida = s_config['uploader']['irida']
     stat = 3
     if send_email_switch is True:
@@ -99,7 +99,7 @@ def main(argv = None):
     #################################
     if(step_id==1):
         try:
-            run_machine_QC(input_dir,out_dir,interop)
+            run_machine_QC(input_dir,out_dir)
             #filter_sheet(input_dir,out_dir)
             copy_reporter(out_dir,run_name)
             status=1

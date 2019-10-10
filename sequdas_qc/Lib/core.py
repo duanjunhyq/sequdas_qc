@@ -64,10 +64,8 @@ def usage():
        step 1: Run MiSeq reporter
        step 2: Run FastQC
        step 3: Run MultiQC
-       step 4: Run Kraken
-       step 5: Run Kaiju
-       step 6: Run Kraken 2
-       step 7: Run IRIDA uploader
+       step 4: Run Kraken2
+       step 5: Run IRIDA uploader
     -u Sequdas id
     -c 
         Run jobs on cluster
@@ -78,7 +76,7 @@ def usage():
        False: won't run the IRIDA uploader (default)
        True: run IRIDA uploader.
     -t 
-       False: only on step (default)
+       False: only one step (default)
        True: run current step and the followings.
     -k
        False: won't keep the Kraken intermediate result (default)

@@ -58,7 +58,7 @@ for filename in filenames:
     #print results
     top_results = sorted(results, key=lambda k: k['percent_reads_in_clade'], reverse=True)[:max_columns]
     top_results = json.dumps(top_results)
-    print top_results
+    print(top_results)
 #    total_reads_reported = sum(result['number_reads_in_clade'] for result in top_results)
 #    total_reads_reported += unclassified_reads
 #    other_reads = total_reads - total_reads_reported

@@ -10,8 +10,8 @@ package:
 #   sha256: "6df4205c38b750eb4c296fda978ff5913d91a2fe655583b2bb109ce63d0be7d0"
 
 source:
-  url: "https://test-files.pythonhosted.org/packages/1b/2f/7698fc476c3015f020b72a6240bc4653cc22942c9a3b0378e16488ab2ecd/sequdas_qc-1.0.0.tar.gz"
-  sha256: "b980af9ff449f7c9989b5822b883128808456fca46b27b9c08437833610bec2f"
+  url: "https://test-files.pythonhosted.org/packages/a7/47/f32c93cd083ee087a99957ffc862ed1a3eda479880490ea06dd390a01bd1/sequdas_qc-1.0.0.3.tar.gz"
+  sha256: "dd2457dac4e4fa314a97ee4a21db5a0b226e0266d593b234abefb5c7c2cbcfd8"
 
 build:
   number: 0
@@ -26,11 +26,11 @@ channels:
 
 requirements:
   host:
-    - python
+    - python>=3.6
   run:
-    - python
+    - python>=3.6
     - configparser
-    - mysql-connector-python
+    - pymysql
     - pytz
     - ntplib
     - validate_email

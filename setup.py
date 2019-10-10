@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name='sequdas_qc',
-    version='1.0.0',
+    version='1.0.0.3',
     description='Sequence Upload and Data Archiving System',
     url='https://github.com/duanjunhyq/sequdas_qc',
     author='Jun Duan',
