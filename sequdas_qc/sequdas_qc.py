@@ -144,7 +144,7 @@ def main(args=None):
         if run_style is True:
             step_id=step_id+1
         if check_up(server_dir+"/Log/Qsub") == True:
-            print("There was an an error in the Qsub process, please check /data/sequdas/sequdas_server/Log/Qsub")
+            print("There may be an error in the Qsub process, please check "+server_dir+"/Log/Qsub")
         stat = stat + status
         print(stat)
     if(step_id==3):
@@ -171,6 +171,8 @@ def main(args=None):
             try:
                 run_kraken2_cluster(input_dir,out_dir,keep_kraken,db,krona,server_dir)
                 copy_reporter(out_dir,run_name)
+                if check_up(server_dir+"/Log/Qsub") == True:
+                    print("There may be an error in the Qsub process, please check "+server_dir+"/Log/Qsub")
                 status=1
             except:
                 status=0
@@ -191,8 +193,7 @@ def main(args=None):
             status_update(sequdas_id,step_id,status)            
         if run_style is True:
             step_id=step_id+1
-        if check_up(server_dir+"/Log/Qsub") == True:
-            print("There was an an error in the Qsub process, please check qsub log file")
+        
         stat = stat + status
         print(stat)
     if(step_id== 5 and run_uploader is True):

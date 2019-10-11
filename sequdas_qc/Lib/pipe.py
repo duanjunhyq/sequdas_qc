@@ -91,39 +91,38 @@ def run_fastqc_cluster(directory,out_dir,server_dir):
     log_dir=server_dir+"/Log/Qsub"
     for fastq_file in fastq_files:
         if fastq_file.endswith(".fastq.gz"):
-            print("qsub "+server_dir+"/Lib/Cluster/fastqc.sh " + fastq_file_location+fastq_file+" "+server_dir+"/Lib/Cluster" +" -e "+log_dir+" -o "+log_dir)
-            subprocess.call("qsub "+server_dir+"/Lib/Cluster/fastqc.sh " + fastq_file_location+fastq_file+" "+server_dir+"/Lib/Cluster" +" -e "+log_dir+" -o "+log_dir, shell = True)
+            print(fastq_file)
+            subprocess.call("qsub -e "+log_dir+" -o "+log_dir+" "+server_dir+"/Lib/Cluster/fastqc.sh " + fastq_file_location+fastq_file+" "+server_dir+"/Lib/Cluster"+" -v qsub_log="+log_dir, shell = True)
     wait_until("sequdas_fastqc")
-    # fastqc_results = os.listdir(fastq_file_location)
-    # for fastqc_result in fastqc_results:
-    #     matchObj = re.match( r'(.*)\_S\d+\_L\d{3}\_(R\d+)\_\S+(_fastqc.html)', fastqc_result, re.M|re.I)
-    #     if matchObj:
-    #         if(matchObj.group(2)=="R1"):
-    #             shutil.copy2(fastq_file_location+"/"+fastqc_result, run_analysis_folder+"/"+matchObj.group(1)+"_F.html")                  
-    #         if(matchObj.group(2)=="R2"):
-    #             shutil.copy2(fastq_file_location+"/"+fastqc_result, run_analysis_folder+"/"+matchObj.group(1)+"_R.html")   
-    # try:
-    #     rough_list = read_data_csv(directory)
-    #     sample_list = make_sample_list(rough_list)
-    #     fastq_dictionary = make_fastq_dict(directory)
-    #     for each_sample in sample_list:
-    #         if len(sample_list) == 0:
-    #             return "N/A"
-    #         if isinstance(each_sample, basestring):
-    #             fastq_file_location= directory+"/Data/Intensities/BaseCalls/"
-    #             path_f = fastq_dictionary[each_sample + "_R1"]
-    #             path_f = fastq_file_location + path_f
-    #             path_r = fastq_dictionary[each_sample + "_R2"]
-    #             path_r = fastq_file_location + path_r
-    #             path_f = os.path.abspath(path_f)
-    #             path_r = os.path.abspath(path_r)
-    #             subprocess.call("qsub "+server_dir+"/Lib/Cluster/coverage.sh "+ path_f +" " + path_r +" " +run_analysis_folder + " " + run_folder_name + " " +each_sample+" "+server_dir, shell = True)
-    #             print("qsub "+server_dir+"/Lib/Cluster/coverage.sh "+ path_f +" " + path_r +" " +run_analysis_folder + " " + run_folder_name + " " +each_sample+" "+server_dir)
-    # except:
-    #     print("There was an issue with the samplesheet, continuing...")
-    # wait_until("sequdas_coverage")
-    # with open(run_analysis_folder+"/"+run_folder_name+"_"+'interop_summary.txt', 'w') as outfile:
-    #     json.dump(create_sample_dict_cluster(directory, run_analysis_folder, run_folder_name), outfile)
+    fastqc_results = os.listdir(fastq_file_location)
+    for fastqc_result in fastqc_results:
+        matchObj = re.match( r'(.*)\_S\d+\_L\d{3}\_(R\d+)\_\S+(_fastqc.html)', fastqc_result, re.M|re.I)
+        if matchObj:
+            if(matchObj.group(2)=="R1"):
+                shutil.copy2(fastq_file_location+"/"+fastqc_result, run_analysis_folder+"/"+matchObj.group(1)+"_F.html")                  
+            if(matchObj.group(2)=="R2"):
+                shutil.copy2(fastq_file_location+"/"+fastqc_result, run_analysis_folder+"/"+matchObj.group(1)+"_R.html")   
+    try:
+        rough_list = read_data_csv(directory)
+        sample_list = make_sample_list(rough_list)      
+        fastq_dictionary = make_fastq_dict(directory)
+        for each_sample in sample_list:
+            if len(sample_list) == 0:
+                return "N/A"
+            if isinstance(each_sample, str):
+                fastq_file_location= directory+"/Data/Intensities/BaseCalls/"
+                path_f = fastq_dictionary[each_sample + "_R1"]
+                path_f = fastq_file_location + path_f
+                path_r = fastq_dictionary[each_sample + "_R2"]
+                path_r = fastq_file_location + path_r
+                path_f = os.path.abspath(path_f)
+                path_r = os.path.abspath(path_r)               
+                subprocess.call("qsub -e "+log_dir+" -o "+log_dir+" "+server_dir+"/Lib/Cluster/coverage.sh "+ path_f +" " + path_r +" " +run_analysis_folder + " " + run_folder_name + " " +each_sample+" "+server_dir, shell = True)
+    except:
+        print("There was an issue with the samplesheet, continuing...")
+    wait_until("sequdas_coverage")
+    with open(run_analysis_folder+"/"+run_folder_name+"_"+'summary.txt', 'w') as outfile:
+        json.dump(create_sample_dict_cluster(directory, run_analysis_folder, run_folder_name), outfile)
     
     # delete = del_list();
     # for each in delete:
@@ -146,8 +145,9 @@ def run_kraken2(directory,out_dir,keep_kraken, db, krona, server_dir):
     sample_sheets=[directory+"/"+"SampleSheet.csv"]
     metadata=parse_metadata(sample_sheets[0])
     sample_list=parse_samples(sample_sheets[0])
-    fastq_files = os.listdir(fastq_file_location)
+    fastq_files = os.listdir(fastq_file_location)    
     fastq_file_dict = {}
+
     for fastq_file in fastq_files:
         if fastq_file.endswith(".fastq.gz"):
             matchObj = re.match( r'(.*)\_S\d+\_L\d{3}\_(R\d+)\_\S+(fastq.gz)', fastq_file, re.M|re.I)
@@ -189,10 +189,10 @@ def run_kraken2(directory,out_dir,keep_kraken, db, krona, server_dir):
                p3_7= subprocess.call(['rm','-fr', kraken_sorted_for_krona])
         except:     
            print("error,please check Kraken")
-    try:
-        cover(run_analysis_folder+"/", run_folder_name)
-    except:
-        print("No coverage file to check... proceeding...")
+    # try:
+    #     cover(run_analysis_folder+"/", run_folder_name)
+    # except:
+    #     print("No coverage file to check... proceeding...")
     print("complete")
 
 def run_kraken2_cluster(directory,out_dir,keep_kraken, db, krona, server_dir):
@@ -204,6 +204,7 @@ def run_kraken2_cluster(directory,out_dir,keep_kraken, db, krona, server_dir):
     sample_list=parse_samples(sample_sheets[0])
     fastq_files = os.listdir(fastq_file_location)
     fastq_file_dict = {}
+    log_dir=server_dir+"/Log/Qsub"
     for fastq_file in fastq_files:
         if fastq_file.endswith(".fastq.gz"):
             matchObj = re.match( r'(.*)\_S\d+\_L\d{3}\_(R\d+)\_\S+(fastq.gz)', fastq_file, re.M|re.I)
@@ -228,8 +229,8 @@ def run_kraken2_cluster(directory,out_dir,keep_kraken, db, krona, server_dir):
         try:
            kraken_result_file=run_analysis_folder+"/"+sample_name_t+"_kraken2.out"
            kraken_report_file=run_analysis_folder+"/"+sample_name_t+"_kraken2_report.txt"
-           subprocess.call("qsub "+server_dir+"/Lib/Cluster/kraken2.sh " +kraken_report_file + " " +kraken_result_file + " " + fq_F + " " + fq_R+" "+server_dir+"/Lib/Cluster"+" "+db, shell = True )
-           #print("qsub "+server_dir+"/Lib/Cluster/kraken2.sh " +kraken_report_file + " " +kraken_result_file + " " + fq_F + " " + fq_R+" "+server_dir+"/Lib/Cluster"+" "+db)
+           subprocess.call("qsub -e "+log_dir+" -o "+log_dir+" "+server_dir+"/Lib/Cluster/kraken2.sh " +kraken_report_file + " " +kraken_result_file + " " + fq_F + " " + fq_R+" "+server_dir+"/Lib/Cluster"+" "+db, shell = True )
+          
         except:     
            print("error,please check Kraken")
     wait_until("sequdas_kraken2")
@@ -254,8 +255,7 @@ def run_kraken2_cluster(directory,out_dir,keep_kraken, db, krona, server_dir):
            output_file.close()
            kraken_sorted_for_krona=run_analysis_folder+"/"+sample_name_t+"_kraken2_krona.ini"
            krona_result_file=run_analysis_folder+"/"+sample_name_t+"_kraken2_krona.out.html"
-           #print("qsub "+server_dir+"/Lib/Cluster/krona.sh " +kraken_json_file+ " "+ kraken_report_file+ " "+ kraken_sorted_for_krona+ " "+ kraken_result_file+ " "+ krona_result_file +" "+server_dir+" "+krona)
-           subprocess.call("qsub "+server_dir+"/Lib/Cluster/krona.sh " +kraken_json_file+ " "+ kraken_report_file+ " "+ kraken_sorted_for_krona+ " "+ kraken_result_file+ " "+ krona_result_file +" "+server_dir+" "+krona, shell = True)
+           subprocess.call("qsub -e "+log_dir+" -o "+log_dir+" "+server_dir+"/Lib/Cluster/krona.sh " +kraken_json_file+ " "+ kraken_report_file+ " "+ kraken_sorted_for_krona+ " "+ kraken_result_file+ " "+ krona_result_file +" "+server_dir+" "+krona, shell = True)
         except:     
            print("error,please check Krona")
     wait_until("sequdas_krona")
@@ -276,14 +276,14 @@ def run_kraken2_cluster(directory,out_dir,keep_kraken, db, krona, server_dir):
             if(keep_kraken is False):
                p3_6= subprocess.call(['rm','-fr', kraken_result_file])
                p3_7= subprocess.call(['rm','-fr', kraken_sorted_for_krona])
-    try:
-        cover(run_analysis_folder+"/", run_folder_name)
-    except:
-        print("No coverage file to check... proceeding...")
+    # try:
+    #     cover(run_analysis_folder+"/", run_folder_name)
+    # except:
+    #     print("No coverage file to check... proceeding...")
     # delete = del_list();
     # for each in delete:
     #     subprocess.call("rm " + each, shell = True)
-    print("complete")
+    print("Runnig Kraken is complete")
 
 
 def Upload_to_Irida(directory,irida):
@@ -388,7 +388,7 @@ def create_sample_dict(directory):
     for index, each_sample in enumerate(sample_list):
         if len(sample_list) == 0:
             return "N/A"
-        if isinstance(each_sample, basestring):
+        if isinstance(each_sample, str):
             dict = {}
             dict["sample_id"] = each_sample
             dict["sample_number"] = index + 1
@@ -419,7 +419,7 @@ def create_sample_dict_cluster(directory, run_analysis_folder, run_folder_name):
     for index, each_sample in enumerate(sample_list):
         if len(sample_list) == 0:
             return "N/A"
-        if isinstance(each_sample, basestring):
+        if isinstance(each_sample, str):
             dict = {}
             dict["sample_id"] = each_sample
             dict["sample_number"] = index + 1
@@ -482,13 +482,13 @@ def reads(sample_id, sample_number):
 """
 #read csv file from string and make rough list from data
 def read_data_csv(directory):
-    with open(directory  + '/SampleSheet.csv', 'rb') as file:
+    samplefile=directory  + '/SampleSheet.csv'
+    with open(samplefile, 'r') as file:
         reader = csv.reader(file)
-        arr = list(reader)
         rough_list = []
         check = True
         try:
-            for element in arr:
+            for element in reader:
                 try:
                     if element[0] == '':
                         check = True
@@ -501,6 +501,7 @@ def read_data_csv(directory):
         except:
             print("There was an error parsing the Sample Sheet")
     return rough_list
+
 
 #parse rough list to get sample id list
 def make_sample_list(list):
@@ -600,21 +601,23 @@ def filter_sheet(input_dir, output_dir):
     except:
         ""
         
-#check that cluster job has finished
+#check that cluster job has finished 
 def wait_until(job):
-    regex = u'<JB_name>(.+?)</JB_name>+?'
+    regex = rb'<JB_name>(.+?)</JB_name>+?'
     qlist = subprocess.check_output("qstat -xml", shell =True)
     names = re.findall(regex, qlist)
+    job = str.encode(job)
     while job in names:
         time.sleep(5)
-        regex = u"<JB_name>(.+?)</JB_name>+?"
+        regex = rb"<JB_name>(.+?)</JB_name>+?"
         qlist = subprocess.check_output("qstat -xml", shell =True)
         names = re.findall(regex, qlist)
+        names = list(names)
 
 #delete files created by cluster after running
-def del_list():
+def del_list(directory):
     keep = ["test_result", "result", "Lib", "Conf", "Log","result", "sequdas_server.py", "Cluster", "kraken_parse.py", "kaiju_parse.py","compare.py"]
-    files = [f for f in os.listdir('/data/sequdas/sequdas_server') if (os.path.isfile(f) and f not in keep)]
+    files = [f for f in os.listdir(directory) if (os.path.isfile(f) and f not in keep)]
     return files
 
 #check if qsub had an error
@@ -630,6 +633,8 @@ def check_up(qdir):
                 error_list.append(f)
     for each in del_list:
         subprocess.call("rm " +qdir + "/"+ each, shell = True)
+    print(error_list)
+    print(del_list)
     if len(error_list) == 0:
         return False
     else:

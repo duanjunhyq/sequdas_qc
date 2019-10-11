@@ -22,7 +22,7 @@ def get_csv_reader(sample_sheet_file):
     """
 
     if path.isfile(sample_sheet_file):
-        csv_file = open(sample_sheet_file, "rb")
+        csv_file = open(sample_sheet_file, "r")
         # strip any trailing newline characters from the end of the line
         # including Windows newline characters (\r\n)
         csv_lines = [x.rstrip('\n') for x in csv_file]
